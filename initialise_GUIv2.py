@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
 from PIL import ImageTk, Image
-import ast
 # Imports dictionary of words and translations
 from maori_words import maori_words_dict as words_dict
 
