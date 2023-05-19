@@ -1,3 +1,10 @@
+"""
+quiz_optionsv1.py
+Second component of quiz project
+In this one I made the quiz options toplevel
+When the toplevel is closed in any way, the main window appears
+"""
+
 import tkinter as tk
 from tkinter import ttk
 from PIL import ImageTk, Image

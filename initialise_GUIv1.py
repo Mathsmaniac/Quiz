@@ -1,3 +1,11 @@
+"""
+initialise_guiv1.py
+First component of quiz program.
+In this I just set up the window and the maori words file
+I made it print the Maori words for testing
+"""
+
+
 import tkinter as tk
 from tkinter import ttk
 from PIL import ImageTk, Image

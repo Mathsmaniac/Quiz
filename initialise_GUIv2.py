@@ -1,3 +1,10 @@
+"""
+initialise_guiv2.py
+Trialling of this component.
+In this one I just imported the maori words in as a python file
+It seems tidier.
+"""
+
 import tkinter as tk
 from tkinter import ttk
 from PIL import ImageTk, Image
