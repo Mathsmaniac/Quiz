@@ -1,6 +1,7 @@
 """
 quiz_frameworkv1.py
 Third component of quiz project
+Built on top of initialise_GUIv2, but not including maori word import
 This component sets up the GUI window for when I actually add the questions
 and answers and working.
 In this version I just added the widgets, including the buttons to insert
