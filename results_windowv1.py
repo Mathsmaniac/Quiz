@@ -1,5 +1,5 @@
 """
-results_window.py
+results_windowv1.py
 Fifth and final component of quiz project before user testing
 A simple toplevel that displays the amount of points received out of ten
 Also has a 'quit' and a 'play again' button
@@ -19,7 +19,7 @@ class Root(tk.Tk):
         s = ttk.Style()
         s.configure("GUIFrame.TFrame", background="#bf3b3b")
         s.configure("GUILabel.TLabel", background="#bf3b3b")
-        results = Results_toplevel(self)
+        Results_toplevel(self)
         self.title("Main window")
         # Label for testing purposes
         ttk.Label(self, text="Main Window",
@@ -36,6 +36,7 @@ class Results_toplevel(tk.Toplevel):
         self.protocol("WM_DELETE_WINDOW", quit)
         # Grab_set window
         self.grab_set()
+        self.focus_set()
         # Create mainframe
         self.mainframe = ttk.Frame(self, style="GUIFrame.TFrame")
         self.mainframe.grid(row=0, column=0)
