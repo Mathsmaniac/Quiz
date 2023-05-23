@@ -35,9 +35,11 @@ class Root(tk.Tk):
         # Set question counter and counter for right and wrong questions
         self.question_count = 1
         self.right_count = 0
+        # Make list to keep track of already asked questions:
+        self.already_chosen = []
         # Make dictionary to store what the user got wrong
         # to display in results window
-        self.wrong_dict = {"one": "tahi", "two": "rua"}
+        self.wrong_dict = {}
         # Background image, using a label to display it
         self.bgimg = ImageTk.PhotoImage(Image.open("Dalle-Background.PNG"))
         self.bglabel = ttk.Label(self, i=self.bgimg)
@@ -113,7 +115,6 @@ class Root(tk.Tk):
             # Rebind return key to next function
             self.bind("<Return>", lambda event: self.next())
             # Check answer
-            print(self.answer.get())
             checked = self.check_answer(self.answer.get())
             # Just shows message "checked" for testing at the moment
             self.answerlabel.configure(text=checked[0])
@@ -152,20 +153,36 @@ class Root(tk.Tk):
         # Convert dictionary keys of the type to a list
         keys_list = list(words_dict[self.quiz_type].keys())
         self.chosen = ""
-        # Choose word and format question
-        self.chosen = random.choice(keys_list)
+        # Choose word and format question if it has not already been chosen
+        while True:
+            self.chosen = random.choice(keys_list)
+            if self.chosen not in self.already_chosen:
+                self.already_chosen.append(self.chosen)
+                break
         self.question.set(f"What is the Māori translation for \n{self.chosen}? ")
         self.qlabel.config(text=self.question.get())
 
     def check_answer(self, answer):
         # Get correct word
         correct = words_dict[self.quiz_type][self.chosen]
-        # Check if write and output feedback
-        if answer.lower() == correct.lower():
-            self.right_count += 1
-            return ["Correct", "Well done"]
+        # If the question asks about black or brown,
+        # there are two possible answers.
+        # This checks if this is the case and makes sure no errors are thrown
+        if str(type(correct)) == "<class 'list'>":
+            if answer.lower() == correct[0].lower() or answer.lower() == correct[1].lower():
+                self.right_count += 1
+                return ["Correct", "Well done"]
+            else:
+                self.wrong_dict[self.chosen] = correct[0]
+                return ["Incorrect", f"The correct answer is {correct[0]}"]
         else:
-            return ["Incorrect", f"The correct answer is {correct}"]
+            # Check if write and output feedback
+            if answer.lower() == correct.lower():
+                self.right_count += 1
+                return ["Correct", "Well done"]
+            else:
+                self.wrong_dict[self.chosen] = correct
+                return ["Incorrect", f"The correct answer is {correct}"]
 
 class Options(tk.Toplevel):
     def __init__(self, parent):
@@ -245,6 +262,7 @@ class Results_toplevel(tk.Toplevel):
     def play_again(self):
         root.question_count = 1
         root.right_count = 0
+        root.already_chosen = []
         root.wrong_dict = {}
         Options(root)
         self.destroy()
