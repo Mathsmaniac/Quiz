@@ -37,6 +37,8 @@ class Root(tk.Tk):
         self.right_count = 0
         # Make list to keep track of already asked questions:
         self.already_chosen = []
+        # Set variable for chosen question
+        self.chosen = ""
         # Make dictionary to store what the user got wrong
         # to display in results window
         self.wrong_dict = {}
@@ -142,7 +144,7 @@ class Root(tk.Tk):
         self.ask_question()
         # If ten questions have been done, show results
         if self.question_count == 11:
-            Results_toplevel(self)
+            ResultsToplevel(self)
             self.withdraw()
         # Clear entry box
         self.answerbox.delete("0", "end")
@@ -152,24 +154,27 @@ class Root(tk.Tk):
     def ask_question(self):
         # Convert dictionary keys of the type to a list
         keys_list = list(words_dict[self.quiz_type].keys())
-        self.chosen = ""
         # Choose word and format question if it has not already been chosen
         while True:
             self.chosen = random.choice(keys_list)
             if self.chosen not in self.already_chosen:
                 self.already_chosen.append(self.chosen)
                 break
-        self.question.set(f"What is the Māori translation for \n{self.chosen}? ")
+        self.question.set(f"What is the Māori translation for "
+                          f"\n{self.chosen}? ")
         self.qlabel.config(text=self.question.get())
 
     def check_answer(self, answer):
+        answer = answer.lower()
         # Get correct word
         correct = words_dict[self.quiz_type][self.chosen]
         # If the question asks about black or brown,
         # there are two possible answers.
         # This checks if this is the case and makes sure no errors are thrown
         if str(type(correct)) == "<class 'list'>":
-            if answer.lower() == correct[0].lower() or answer.lower() == correct[1].lower():
+            correct[0] = correct[0].lower()
+            correct[1] = correct[1].lower()
+            if answer == correct[0] or answer == correct[1]:
                 self.right_count += 1
                 return ["Correct", "Well done"]
             else:
@@ -184,6 +189,7 @@ class Root(tk.Tk):
                 self.wrong_dict[self.chosen] = correct
                 return ["Incorrect", f"The correct answer is {correct}"]
 
+
 class Options(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
@@ -194,24 +200,34 @@ class Options(tk.Toplevel):
         # If the toplevel is closed, program closes
         self.protocol("WM_DELETE_WINDOW", quit)
         # Create continue button
-        continue_button = ttk.Button(self.mainframe, text="Continue", command=self.close_window)
+        continue_button = ttk.Button(self.mainframe, text="Continue",
+                                     command=self.close_window)
         continue_button.grid(row=4, column=0, padx=10, pady=10)
         # Create title
-        title_label = ttk.Label(self.mainframe, text="Choose Quiz Type", font=("Arial", 30))
+        title_label = ttk.Label(self.mainframe, text="Choose Quiz Type",
+                                font=("Arial", 30))
         title_label.grid(row=0, column=0, padx=10, pady=10)
         # Define images
-        self.colours_img = ImageTk.PhotoImage(Image.open("colours_img.jpg").resize((150, 100)))
-        self.dates_img = ImageTk.PhotoImage(Image.open("calendar_img.png").resize((150, 100)))
-        self.numbers_img = ImageTk.PhotoImage(Image.open("numbers_img.jpg").resize((150, 100)))
+        self.colours_img = ImageTk.PhotoImage(Image.open("colours_img.jp"
+                                                         "g").resize((150,
+                                                                      100)))
+        self.dates_img = ImageTk.PhotoImage(Image.open("calendar_img.pn"
+                                                       "g").resize((150, 100)))
+        self.numbers_img = ImageTk.PhotoImage(Image.open("numbers_img.jp"
+                                                         "g").resize((150,
+                                                                      100)))
         # Define variable for radiobuttons
         self.option = tk.StringVar()
         self.option.set("colours")
         # Create radiobuttons
-        self.r_colour = tk.Radiobutton(self.mainframe, image=self.colours_img, variable=self.option, value="colours")
+        self.r_colour = tk.Radiobutton(self.mainframe, image=self.colours_img,
+                                       variable=self.option, value="colours")
         self.r_colour.grid(row=1, column=0, padx=20, pady=10)
-        self.r_date = tk.Radiobutton(self.mainframe, image=self.dates_img, variable=self.option, value="days_months")
+        self.r_date = tk.Radiobutton(self.mainframe, image=self.dates_img,
+                                     variable=self.option, value="days_months")
         self.r_date.grid(row=2, column=0, padx=20, pady=10)
-        self.r_number = tk.Radiobutton(self.mainframe, image=self.numbers_img, variable=self.option, value="numbers")
+        self.r_number = tk.Radiobutton(self.mainframe, image=self.numbers_img,
+                                       variable=self.option, value="numbers")
         self.r_number.grid(row=3, column=0, padx=20, pady=10)
 
     def close_window(self):
@@ -222,7 +238,8 @@ class Options(tk.Toplevel):
         root.answerbox.focus_set()
         self.destroy()
 
-class Results_toplevel(tk.Toplevel):
+
+class ResultsToplevel(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
         self.title("Results!")
@@ -247,14 +264,19 @@ class Results_toplevel(tk.Toplevel):
                                  font=("Arial", 15), style="GUILabel.TLabel")
         self.r_label.grid(row=0, column=0, columnspan=2, padx=10, pady=10)
         # Info label for wrong words
-        self.i_wrong_label = ttk.Label(self.mainframe, text="", font=("Arial", 12), style="GUILabel.TLabel")
-        self.i_wrong_label.grid(row=1, column=0, padx=10, pady=10, columnspan=2)
+        self.i_wrong_label = ttk.Label(self.mainframe, text="",
+                                       font=("Arial", 12),
+                                       style="GUILabel.TLabel")
+        self.i_wrong_label.grid(row=1, column=0, padx=10, pady=10,
+                                columnspan=2)
         if root.wrong_dict != {}:
             self.i_wrong_label.configure(text="Here are your mistakes:")
         # Label to display words the user got wrong
         self.wrong_text = ""
         for item in root.wrong_dict:
-            self.wrong_text += f"'{item}' translates to '{root.wrong_dict[item]}'\n"
+            # Add wrong items to string in two parts for PEP8
+            self.wrong_text += f"'{item}' translates to"
+            self.wrong_text += f" '{root.wrong_dict[item]}'\n"
         self.wrong_label = ttk.Label(self.mainframe, text=self.wrong_text,
                                      style="GUILabel.TLabel")
         self.wrong_label.grid(row=2, column=0, padx=10, pady=10, columnspan=2)
@@ -269,5 +291,5 @@ class Results_toplevel(tk.Toplevel):
 
 
 if __name__ == "__main__":
-    root=Root()
+    root = Root()
     tk.mainloop()
